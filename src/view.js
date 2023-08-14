@@ -43,7 +43,7 @@ function initView(el) {
 	const { renderer, camera, scene } = viewState
 
 	renderer.setSize(window.innerWidth, window.innerHeight)
-	renderer.setClearColor('#345')
+	renderer.setClearColor('#282c34')
 	el.appendChild(renderer.domElement)
 
 	camera.left = (-window.innerWidth * viewState.size) / 100
