@@ -1,13 +1,14 @@
-import { useEffect, useRef } from "react"
-import { initView } from "./view";
+import { useEffect, useRef } from 'react'
+import { initControl, initView } from './view'
 
 function Scene(props) {
-    const elRef = useRef()
+	const elRef = useRef()
 
-    useEffect(() => {
-        initView(elRef.current)
-     },[])
-    return <div ref={elRef}></div>
+	useEffect(() => {
+		initView(elRef.current)
+		initControl(elRef.current)
+	}, [])
+	return <div ref={elRef}></div>
 }
 
 export { Scene }

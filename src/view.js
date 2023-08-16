@@ -1,13 +1,6 @@
 import * as THREE from 'three'
-
-const viewState = {
-	renderer: new THREE.WebGLRenderer(),
-	scene: new THREE.Scene(),
-	camera: new THREE.OrthographicCamera(),
-	size: 1,
-}
-
-window.viewData = viewState
+import { screenToThree } from './utils'
+import { viewState, CONTROL_MODE } from './store'
 
 function render() {
 	const { renderer, camera, scene } = viewState
@@ -24,15 +17,8 @@ function render() {
 
 window.onresize = (ev) => {
 	const { renderer } = viewState
+
 	renderer.setSize(window.innerWidth, window.innerHeight)
-}
-
-window.onwheel = (ev) => {
-	let size = viewState.size + (0.1 * viewState.size * ev.deltaY) / Math.abs(ev.deltaY)
-
-	if (size < 0.1) size = 0.1
-
-	viewState.size = size
 }
 
 /**
@@ -62,4 +48,48 @@ function initView(el) {
 	render()
 }
 
-export { viewState, initView }
+/**
+ *
+ * @param {HTMLElement} el
+ */
+function initControl(el) {
+	el.onwheel = (ev) => {
+		let size = viewState.size + (0.1 * viewState.size * ev.deltaY) / Math.abs(ev.deltaY)
+
+		if (size < 0.1) size = 0.1
+
+		viewState.size = size
+	}
+
+	el.oncontextmenu = (ev) => ev.preventDefault()
+
+	// onpointer event cannot be trigged twice when there is one button is down
+	el.onmousedown = (ev) => {
+		if (viewState.controlMode === CONTROL_MODE.EDIT && ev.button === 0 && !ev.ctrlKey) {
+			viewState.isColor = true
+			viewState.isMove = false
+		} else {
+			viewState.isColor = false
+			viewState.isMove = true
+		}
+	}
+
+	el.onpointerup = (ev) => {
+		viewState.isColor = false
+		viewState.isMove = false
+	}
+
+	el.onpointerleave = (ev) => {
+		viewState.isColor = false
+		viewState.isMove = false
+	}
+
+	el.onmousemove = (ev) => {
+		if (viewState.isMove) {
+			const movementXY = screenToThree(new THREE.Vector2(ev.movementX, ev.movementY))
+			viewState.camera.position.add(new THREE.Vector3(movementXY.x, movementXY.y, 0))
+		}
+	}
+}
+
+export { viewState, initView, initControl }
