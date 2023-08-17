@@ -12,11 +12,20 @@ const viewState = {
 	size: 1,
 	controlMode: CONTROL_MODE.MOVE,
 	isMove: false,
-	isColor: false,
+    isColor: false,
+    
+    group: new THREE.Group(),
+	materialMap: {
+		'#ffffff': new THREE.MeshBasicMaterial({ color: '#ffffff' }),
+	},
 }
 
 window.viewData = viewState
 
-const gridState = {}
+const fullGridStore = {}
 
-export { CONTROL_MODE, viewState }
+const coloredGridStore = {}
+
+window.gridData = {fullGridStore, coloredGridStore}
+
+export { CONTROL_MODE, viewState, fullGridStore, coloredGridStore }
