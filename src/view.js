@@ -11,8 +11,8 @@ function render() {
 
 window.onresize = (ev) => {
 	const { renderer } = viewState
-    computeCamera()
-    computeGrid()
+	computeCamera()
+	computeGrid()
 	renderer.setSize(window.innerWidth, window.innerHeight)
 }
 
@@ -26,6 +26,7 @@ function computeCamera() {
 }
 
 function computeGrid() {
+	return
 	const { camera } = viewState
 	const [width, height] = [camera.right, camera.top]
 	const { x: offsetX, y: offsetY } = camera.position
@@ -59,7 +60,7 @@ function computeGrid() {
  * @param {HTMLElement} el
  */
 function initView(el) {
-	const { renderer, camera, scene, group } = viewState
+	const { renderer, camera, scene, group, grid } = viewState
 
 	renderer.setSize(window.innerWidth, window.innerHeight)
 	renderer.setClearColor('#282c34')
@@ -71,9 +72,21 @@ function initView(el) {
 	camera.position.set(0, 0, 10)
 
 	group.position.set(0.5, 0.5, 0)
-    scene.add(group)
-    
-    computeGrid()
+	group.frustumCulled = false
+
+	scene.add(group)
+
+	grid.rotateX(Math.PI / 2)
+	const positions = new Float32Array(500 * 6)
+	const colors = new Float32Array(500 * 6)
+	grid.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+	grid.geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
+	scene.add(grid)
+
+	const posAttr = grid.geometry.getAttribute('position')
+	console.log(posAttr)
+
+	computeGrid()
 
 	render()
 }
@@ -89,8 +102,8 @@ function initControl(el) {
 		if (size > 2) size = 2
 
 		viewState.size = size
-        computeCamera()
-        computeGrid()
+		computeCamera()
+		computeGrid()
 	}
 
 	el.oncontextmenu = (ev) => ev.preventDefault()
@@ -119,8 +132,8 @@ function initControl(el) {
 	el.onmousemove = (ev) => {
 		if (viewState.isMove) {
 			const movementXY = screenToThree(new THREE.Vector2(ev.movementX, ev.movementY))
-            viewState.camera.position.add(new THREE.Vector3(movementXY.x, movementXY.y, 0))
-            computeGrid()
+			viewState.camera.position.add(new THREE.Vector3(movementXY.x, movementXY.y, 0))
+			computeGrid()
 		}
 	}
 }
